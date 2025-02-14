@@ -16,4 +16,10 @@ export default defineNuxtConfig({
             tailwindcss(),
         ],
     },
+    modules: ['@nuxt/icon'],
+    icon: {
+        serverBundle: {
+            collections: ['material-symbols'] // <!--- this
+        }
+    },
 })
