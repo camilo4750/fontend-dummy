@@ -1,0 +1,8 @@
+version: "3.9"
+
+#Puerto_maquina:puerto_contenedor
+services:
+  dummy-frontend:
+    ports:
+      - "3000:3000"
+      - "3004:3002"
