@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from "@tailwindcss/vite";
+import type {NuxtConfig} from "@nuxt/schema";
 
 export default defineNuxtConfig({
     compatibilityDate: '2024-11-01',
@@ -16,10 +17,10 @@ export default defineNuxtConfig({
             tailwindcss(),
         ],
     },
-    modules: ['@nuxt/icon'],
+    modules: ['@nuxt/icon', '@nuxt/ui'],
     icon: {
         serverBundle: {
             collections: ['material-symbols'] // <!--- this
         }
     },
-})
+} as NuxtConfig)
