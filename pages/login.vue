@@ -26,7 +26,7 @@ async function onSubmitLogin(event: FormSubmitEvent<Schema>) {
   useAuth()
     .login(event.data.userName, event.data.password)
     .then((response) => {
-      return navigateTo('/home');
+      navigateTo('/home');
     })
     .catch((e) => {
       useToast().add({
