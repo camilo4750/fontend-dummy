@@ -1,9 +1,12 @@
 <script setup lang="ts">
-
+definePageMeta({
+  layout: "default",
+  middleware: ["auth"],
+})
 </script>
 
 <template>
-  <div class=""></div>
+
 </template>
 
 <style scoped>
