@@ -9,6 +9,7 @@ const isLoading = ref<boolean>(true);
 const todos = ref<Todo[]>([]);
 const currentPage = ref<number>(1);
 const limit: number = 16;
+const isOpenModalCreateTask = ref<boolean>(false);
 
 onMounted(() => {
   getTodos();
@@ -48,11 +49,11 @@ watch(currentPage, () => {
     <div class="flex justify-between items-center gap-4">
       <h2 class="font-bold text-4xl py-5">Tasks</h2>
       <div class="">
-        <UButton label="Crate task" />
+        <UButton label="Crate task" @click="isOpenModalCreateTask = true" />
       </div>
     </div>
 
-    <div class="grid grid-cols-4 gap-5 p-5" v-if="!isLoading">
+    <div class="grid grid-cols-4 gap-5 p-5" v-show="!isLoading">
       <UCard
         v-for="todo in todos"
         :key="todo.id"
@@ -70,7 +71,7 @@ watch(currentPage, () => {
         }"
       >
         <template #header>
-          <Placeholder class="flex justify-between">
+          <div class="flex justify-between">
             <span class="rounded-full border px-2">{{ todo.id }}</span>
             <UBadge
               :color="todo?.completed ? 'green' : 'red'"
@@ -79,11 +80,11 @@ watch(currentPage, () => {
               <span v-if="todo?.completed">Active</span>
               <span v-else>Inactive</span>
             </UBadge>
-          </Placeholder>
+          </div>
         </template>
-        <Placeholder>
+        <div>
           {{ todo.todo }}
-        </Placeholder>
+        </div>
       </UCard>
       <div class="col-span-4 flex justify-end">
         <UPagination
@@ -93,10 +94,11 @@ watch(currentPage, () => {
         />
       </div>
     </div>
-    <div class="grid grid-cols-4 gap-5" v-else>
+    <div class="grid grid-cols-4 gap-5" v-show="isLoading">
       <UCard class="animate-pulse h-32" v-for="index in 16" :key="index" />
     </div>
   </UContainer>
+  <SectionHomeModalsCreateTask v-model:is-open="isOpenModalCreateTask" />
 </template>
 
 <style scoped></style>
