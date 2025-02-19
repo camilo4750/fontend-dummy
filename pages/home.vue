@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Todo } from "~/types/backend/Todos";
+
 definePageMeta({
   layout: "default",
   middleware: ["auth"],
@@ -34,9 +35,13 @@ async function getTodos() {
 
       todos.value = response._data.todos;
     },
-  }).finally(() => {
-    isLoading.value = false;
-  });
+  })
+    .catch((error) => {
+      console.error("Error fetching tasks:", error);
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
 }
 
 watch(currentPage, () => {
@@ -46,57 +51,15 @@ watch(currentPage, () => {
 
 <template>
   <UContainer>
-    <div class="flex justify-between items-center gap-4">
-      <h2 class="font-bold text-4xl py-5">Tasks</h2>
-      <div class="">
-        <UButton label="Crate task" @click="isOpenModalCreateTask = true" />
-      </div>
-    </div>
+    <SectionHomeTaskHeader @open-modal="isOpenModalCreateTask = true" />
 
-    <div class="grid grid-cols-4 gap-5 p-5" v-show="!isLoading">
-      <UCard
-        v-for="todo in todos"
-        :key="todo.id"
-        :ui="{
-          base: 'hover:shadow-lg',
-          header: {
-            padding: 'sm:px-3 px-2 py-2',
-          },
-          body: {
-            padding: 'sm:px-3 px-3 py-3 h-32',
-          },
-          footer: {
-            padding: 'sm:px-3 px-2 py-2',
-          },
-        }"
-      >
-        <template #header>
-          <div class="flex justify-between">
-            <span class="rounded-full border px-2">{{ todo.id }}</span>
-            <UBadge
-              :color="todo?.completed ? 'green' : 'red'"
-              :ui="{ rounded: 'rounded-full' }"
-            >
-              <span v-if="todo?.completed">Active</span>
-              <span v-else>Inactive</span>
-            </UBadge>
-          </div>
-        </template>
-        <div>
-          {{ todo.todo }}
-        </div>
-      </UCard>
-      <div class="col-span-4 flex justify-end">
-        <UPagination
-          v-model="currentPage"
-          :page-count="1"
-          :total="todos.length"
-        />
-      </div>
-    </div>
-    <div class="grid grid-cols-4 gap-5" v-show="isLoading">
-      <UCard class="animate-pulse h-32" v-for="index in 16" :key="index" />
-    </div>
+    <SectionHomeTasksList
+      v-if="!isLoading"
+      :todos="todos"
+      :currentPage="currentPage"
+      @update:currentPage="currentPage = $event"
+    />
+    <SectionHomeTasksSkeleton v-else />
   </UContainer>
   <SectionHomeModalsCreateTask v-model:is-open="isOpenModalCreateTask" />
 </template>
