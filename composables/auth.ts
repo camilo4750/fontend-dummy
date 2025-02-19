@@ -34,6 +34,16 @@ export const useAuth = () => ({
         },
       }).catch(({ response }) => reject(response));
     }),
+  logout: () => new Promise<void>((resolve) => {
+    useCookie("a47d32", COOKIE_CONFIG).value = "";
+    useCookie("30dkk4", COOKIE_CONFIG).value = "";
+    useCookie("x038ss", COOKIE_CONFIG).value = "";
+    useCookie("s1s2n3", COOKIE_CONFIG).value = "";
+    useCookie("s3sd445", COOKIE_CONFIG).value = "";
+    useSession().close();
+    useRouter().push("/login");
+    resolve();
+  }),
 });
 
 export const useSession = () => ({
@@ -59,4 +69,11 @@ export const useSession = () => ({
         reject(e);
       }
     }),
+    close: () => { 
+      useSession().user.token.value = "";
+      useSession().user.fullName.value = "";
+      useSession().user.email.value = "";
+      useSession().user.userName.value = "";
+      useSession().user.userImg.value = "";
+    }
 });
