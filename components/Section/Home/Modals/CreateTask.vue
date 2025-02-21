@@ -163,7 +163,7 @@ async function onSubmitCreateTask(event: FormSubmitEvent<Schema>) {
           class="space-y-4"
           @submit="onSubmitCreateTask"
         >
-          <UFormGroup label="Task" name="task" required>
+          <UFormGroup label="Task" name="todo" required>
             <UInput
               v-model="task.todo"
               placeholder="Task"
