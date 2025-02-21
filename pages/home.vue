@@ -19,7 +19,7 @@ onMounted(() => {
 async function getTodos() {
   isLoading.value = true;
   const skip = (currentPage.value - 1) * limit;
-  await $fetch("https://dummyjson.com/todos", {
+  await $fetch(useRuntimeConfig().public.baseApiUrl + "/todos", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
