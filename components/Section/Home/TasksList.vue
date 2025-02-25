@@ -15,26 +15,41 @@ const currentPage = computed({
 
 const emit = defineEmits(["update:currentPage"]);
 
+const isLoading = ref<boolean>(true);
 
-const items = [
-  [
-    {
-      label: "Edit",
-      icon: 'material-symbols:edit-square-outline-rounded',
-      click: () => {
-        console.log("Edit");
-      },
+async function updateTodo(id: number, completed: boolean) {
+  isLoading.value = false;
+  await $fetch(`${useRuntimeConfig().public.baseApiUrl}/todos/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
     },
-    {
-      label: "Delete",
-      icon: 'material-symbols:delete',
-      click: () => {
-        console.log("Edit");
-      },
-    },
-  ],
-];
+    body: JSON.stringify({ completed: !completed }),
+    onResponse({ response }) {
+      if (!response.ok) {
+        useToast().add({
+          id: "error update todo",
+          title: "Error",
+          description: response._data.message,
+          icon: "material-symbols:brightness-alert-rounded",
+        });
+      }
 
+      useToast().add({
+        id: "success update todo",
+        title: "Success",
+        description: "Todo updated successfully",
+        icon: "material-symbols:done-all-rounded",
+      });
+    },
+  })
+    .catch((error) => {
+      console.error("Error updating todo:", error);
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
+}
 </script>
 
 <template>
@@ -55,27 +70,62 @@ const items = [
             :color="todo?.completed ? 'green' : 'red'"
             :ui="{ rounded: 'rounded-full' }"
           >
-            <span v-if="todo?.completed">Active</span>
-            <span v-else>Inactive</span>
+            <span v-if="todo?.completed">completed</span>
+            <span v-else>Pending</span>
           </UBadge>
-          <UDropdown :items="items" :ui="{}" :popper="{ placement: 'bottom-start' }">
+          <UPopover>
             <UButton
               :ui="{ rounded: 'rounded-full' }"
               size="xs"
               color="white"
               trailing-icon="i-heroicons-chevron-down-20-solid"
             />
-          </UDropdown>
+
+            <template #panel>
+              <div>
+                <div class="w-48">
+                  <ul class="">
+                    <li
+                      disabled
+                      @click="updateTodo(todo.id, todo.completed)"
+                      class="px-3 py-1 hover:bg-slate-200 hover:dark:bg-blue-200 hover:dark:text-black cursor-pointer"
+                    >
+                      <div class="flex justify-between items-center">
+                        <span class="text-sm">{{
+                          todo.completed ? "Pending" : "Done"
+                        }}</span>
+                        <UIcon
+                          :name="
+                            todo.completed
+                              ? 'material-symbols:pending-actions-rounded'
+                              : 'material-symbols:download-done-rounded'
+                          "
+                        />
+                      </div>
+                    </li>
+                    <li
+                      class="px-3 py-1 hover:bg-slate-200 hover:dark:bg-blue-200 hover:dark:text-black cursor-pointer"
+                    >
+                      <div class="flex justify-between items-center">
+                        <span class="text-sm">Delete</span>
+                        <UIcon name="material-symbols:delete" />
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </template>
+          </UPopover>
         </div>
       </template>
       <div>{{ todo.todo }}</div>
     </UCard>
   </div>
   <div class="w-full flex justify-end">
-      <UPagination
-        v-model="currentPage"
-        :page-count="16"
-        :total="props.totalTodos"
-      />
-    </div>
+    <UPagination
+      v-model="currentPage"
+      :page-count="16"
+      :total="props.totalTodos"
+    />
+  </div>
 </template>
