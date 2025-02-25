@@ -7,16 +7,11 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: "",
-  responseKey: "data",
 });
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "selected"]);
 
-const value = computed({
-  get: () => props.modelValue,
-  set: (value: string) => emit("update:modelValue", value),
-});
-
+const value = ref(props.modelValue);
 const timeOut = ref();
 const results = ref<SelectUser[]>([]);
 const isLoading = ref(false);
@@ -43,7 +38,7 @@ async function HandleSearch(event: Event) {
             const data = response._data.users;
             const formatUser = data.map((user) => ({
               name: `${user.firstName} ${user.lastName}`,
-              value: user._id,
+              value: user.id,
             }));
             results.value = formatUser;
           } else results.value = [];
@@ -72,13 +67,20 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener("mousedown", handleClickOutside);
 });
+
+function getId(id: string | number, name: string) {
+  emit("selected", id);
+  emit("update:modelValue", name);
+  isOpen.value = false;
+  results.value = [];
+}
 </script>
 
 <template>
   <div class="relative" ref="cardRef">
     <UInput
       @mousedown="isOpen = true"
-      :value="value"
+      v-model="value"
       icon="i-heroicons-magnifying-glass-20-solid"
       placeholder="Search..."
       :autofocus="false"
@@ -96,6 +98,7 @@ onUnmounted(() => {
         <div v-for="result in results">
           <button
             class="px-3 py-2 dark:text-white dark:hover:text-black dark:hover:bg-blue-300 hover:bg-gray-300 w-full text-left"
+            @click="getId(result.value, result.name)"
           >
             {{ result.name }}
           </button>
