@@ -50,6 +50,10 @@ async function updateTodo(id: number, completed: boolean) {
       isLoading.value = false;
     });
 }
+
+function deleteTodo() {
+  console.log("delete todo");
+}
 </script>
 
 <template>
@@ -95,6 +99,11 @@ async function updateTodo(id: number, completed: boolean) {
                           todo.completed ? "Pending" : "Done"
                         }}</span>
                         <UIcon
+                          :class="
+                            todo.completed
+                              ? 'text-yellow-600'
+                              : 'text-green-600'
+                          "
                           :name="
                             todo.completed
                               ? 'material-symbols:pending-actions-rounded'
@@ -108,7 +117,7 @@ async function updateTodo(id: number, completed: boolean) {
                     >
                       <div class="flex justify-between items-center">
                         <span class="text-sm">Delete</span>
-                        <UIcon name="material-symbols:delete" />
+                        <UIcon class="text-red-600" name="material-symbols:delete" />
                       </div>
                     </li>
                   </ul>
