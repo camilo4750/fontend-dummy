@@ -82,10 +82,12 @@ async function getUsers() {
       }
 
       const dataUsers = response._data.users;
-      const formatUser = dataUsers.map((user) => ({
-        name: `${user.firstName} ${user.lastName}`,
-        value: user.id,
-      }));
+      const formatUser = dataUsers.map(
+        (user: { firstName: string; lastName: string; id: number }) => ({
+          name: `${user.firstName} ${user.lastName}`,
+          value: user.id,
+        })
+      );
 
       users.value = formatUser;
     },
@@ -133,7 +135,6 @@ async function onSubmitCreateTask(event: FormSubmitEvent<Schema>) {
     .finally(() => {
       isLoading.value = false;
     });
-  // ...handle form submission logic...
 }
 </script>
 
