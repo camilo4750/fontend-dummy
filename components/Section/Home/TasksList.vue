@@ -51,8 +51,38 @@ async function updateTodo(id: number, completed: boolean) {
     });
 }
 
-function deleteTodo() {
-  console.log("delete todo");
+async function deleteTodo(id: number) {
+  let status = confirm("Are you sure you want to delete this todo?");
+  if (status) {
+    await $fetch(`${useRuntimeConfig().public.baseApiUrl}/todos/${id}`, {
+      method: "DELETE",
+      onResponse({ response }) {
+        if (!response.ok) {
+          useToast().add({
+            id: "error delete todo",
+            title: response._data.message,
+            description: response._data.message,
+            icon: "material-symbols:brightness-alert-rounded",
+          });
+        }
+
+        if (response._data.isDeleted) {
+          useToast().add({
+            id: "success delete todo",
+            title: "Success",
+            description: "Todo deleted successfully",
+            icon: "material-symbols:done-all-rounded",
+          });
+        }
+      },
+    })
+      .catch((error) => {
+        console.error("Error deleting todo:", error);
+      })
+      .finally(() => {
+        isLoading.value = false;
+      });
+  }
 }
 </script>
 
@@ -114,10 +144,14 @@ function deleteTodo() {
                     </li>
                     <li
                       class="px-3 py-1 hover:bg-slate-200 hover:dark:bg-blue-200 hover:dark:text-black cursor-pointer"
+                      @click="deleteTodo(todo.id)"
                     >
                       <div class="flex justify-between items-center">
                         <span class="text-sm">Delete</span>
-                        <UIcon class="text-red-600" name="material-symbols:delete" />
+                        <UIcon
+                          class="text-red-600"
+                          name="material-symbols:delete"
+                        />
                       </div>
                     </li>
                   </ul>
@@ -130,7 +164,7 @@ function deleteTodo() {
       <div>{{ todo.todo }}</div>
     </UCard>
   </div>
-  <div class="w-full flex justify-end">
+  <div class="w-full flex justify-center md:justify-end">
     <UPagination
       v-model="currentPage"
       :page-count="16"
