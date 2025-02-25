@@ -12,11 +12,19 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(["update:modelValue", "selected"]);
 
 const value = ref(props.modelValue);
+
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    value.value = newValue;
+  }
+);
+
 const timeOut = ref();
 const results = ref<SelectUser[]>([]);
 const isLoading = ref(false);
 const isOpen = ref(false);
-const cardRef = ref(null);
+const cardRef = ref<HTMLElement | null>(null);
 
 async function HandleSearch(event: Event) {
   const target = event.target as HTMLInputElement;
@@ -36,10 +44,12 @@ async function HandleSearch(event: Event) {
         onResponse({ response }) {
           if (response.status === 200) {
             const data = response._data.users;
-            const formatUser = data.map((user) => ({
-              name: `${user.firstName} ${user.lastName}`,
-              value: user.id,
-            }));
+            const formatUser = data.map(
+              (user: { firstName: string; lastName: string; id: number }) => ({
+                name: `${user.firstName} ${user.lastName}`,
+                value: user.id,
+              })
+            );
             results.value = formatUser;
           } else results.value = [];
         },
@@ -55,7 +65,7 @@ async function HandleSearch(event: Event) {
 }
 
 const handleClickOutside = (event: Event) => {
-  if (cardRef.value && !cardRef.value.contains(event.target)) {
+  if (cardRef.value && !cardRef.value.contains(event.target as Node)) {
     isOpen.value = false;
   }
 };
