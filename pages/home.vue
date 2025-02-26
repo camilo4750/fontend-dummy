@@ -26,9 +26,6 @@ async function getTodos() {
   isLoading.value = true;
   const skip = (paginate.currentPage - 1) * limit;
 
-  console.log("entro");
-  console.log(fetchUrlTods.value);
-
   await $fetch(fetchUrlTods.value, {
     method: "GET",
     headers: {
